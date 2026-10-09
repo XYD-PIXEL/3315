@@ -1,0 +1,137 @@
+[
+  {
+    "name": "01-scan-bottle",
+    "query": "?scenario=confident",
+    "title": "Scan an empty bottle",
+    "width": 390,
+    "height": 876.86
+  },
+  {
+    "name": "02-result-recycling",
+    "query": "?view=result&item=bottle",
+    "title": "Recycling result and handling note",
+    "width": 390,
+    "height": 951.86
+  },
+  {
+    "name": "03-complete",
+    "query": "?view=complete&item=bottle",
+    "title": "Bottle sorting confirmation",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "name": "04-scan-cup",
+    "query": "?scenario=ambiguous",
+    "title": "Scan a confusing cup",
+    "width": 390,
+    "height": 876.86
+  },
+  {
+    "name": "05-candidates",
+    "query": "?scenario=ambiguous&view=candidates",
+    "title": "Choose from three candidate items",
+    "width": 390,
+    "height": 915.86
+  },
+  {
+    "name": "06-result-general",
+    "query": "?view=result&item=coffee-cup",
+    "title": "Coffee cup: general waste",
+    "width": 390,
+    "height": 895.86
+  },
+  {
+    "name": "07-scan-packet",
+    "query": "?scenario=unknown",
+    "title": "Scan an unrecognised packet",
+    "width": 390,
+    "height": 876.86
+  },
+  {
+    "name": "08-unrecognised",
+    "query": "?scenario=unknown&view=unknown",
+    "title": "Recognition fallback",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "name": "09-search",
+    "query": "?view=search",
+    "title": "Browse common items",
+    "width": 390,
+    "height": 1095.58
+  },
+  {
+    "name": "10-search-chips",
+    "query": "?view=search",
+    "fill": "chips",
+    "title": "Search for chips",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "name": "11-result-packet",
+    "query": "?view=result&item=packet",
+    "title": "Chip packet: general waste",
+    "width": 390,
+    "height": 895.86
+  },
+  {
+    "name": "12-search-empty",
+    "query": "?view=search",
+    "fill": "battery",
+    "title": "No matching rule: recovery",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "name": "13-missing-bin",
+    "query": "?view=result&item=banana&station=library-03",
+    "title": "The station has no food-organics bin",
+    "width": 390,
+    "height": 912.36
+  },
+  {
+    "name": "14-result-container",
+    "query": "?view=result&item=container",
+    "title": "Plastic container: recycling",
+    "width": 390,
+    "height": 895.86
+  },
+  {
+    "name": "15-result-compostable",
+    "query": "?view=result&item=compostable-cup",
+    "title": "Compostable cup: example rule",
+    "width": 390,
+    "height": 895.86
+  },
+  {
+    "name": "16-station-error",
+    "query": "?station=unverified",
+    "title": "Unrecognised QR location",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "name": "17-complete-cup",
+    "query": "?view=complete&item=coffee-cup",
+    "title": "Coffee cup sorting confirmation",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "name": "18-complete-packet",
+    "query": "?view=complete&item=packet",
+    "title": "Packet sorting confirmation",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "name": "19-result-organics",
+    "query": "?view=result&item=banana&station=food-court-01",
+    "title": "Food organics at an equipped station",
+    "width": 390,
+    "height": 895.86
+  }
+]
