@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
+import type { ChangeEvent } from "react";
 import type { Category, Item, Scenario, Screen } from "./data";
 import { categories, items, searchItems, stations } from "./data";
 import Icon from "./Icon";
 import ItemArt from "./ItemArt";
+import { useImportedPhoto } from "./useImportedPhoto";
 
 const params = new URLSearchParams(window.location.search);
 const initialScenario = (
@@ -85,6 +87,9 @@ function App() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const photoInputRef = useRef<HTMLInputElement>(null);
+  const importPhotoButtonRef = useRef<HTMLButtonElement>(null);
+  const imported = useImportedPhoto();
   const firstRender = useRef(true);
   const sample =
     scenario === "confident"
@@ -158,6 +163,7 @@ function App() {
   }, [cameraWanted, cameraRequest, screen]);
 
   function reset(nextScenario = scenario) {
+    imported.clear();
     setScenario(nextScenario);
     setScreen(station ? "scanner" : "station-error");
     setQuery("");
@@ -181,8 +187,18 @@ function App() {
     setScreen("matching");
   }
   function useCamera() {
+    imported.clear();
     setCameraWanted(true);
     setCameraRequest((value) => value + 1);
+  }
+  async function importPhoto(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.currentTarget.files?.[0];
+    event.currentTarget.value = "";
+    if (!file) return;
+    if (await imported.selectFile(file)) {
+      setCameraWanted(false);
+      setCameraMessage("");
+    }
   }
 
   return (
@@ -307,32 +323,59 @@ function App() {
                       }}
                     />
                   )}
-                  {cameraState !== "live" && (
-                    <>
-                      <div className="camera-texture" />
-                      <ItemArt kind={sample.art} className="scan-art" />
-                    </>
+                  {imported.photo ? (
+                    <img
+                      className="imported-preview"
+                      src={imported.photo.url}
+                      alt="Imported waste item"
+                    />
+                  ) : (
+                    cameraState !== "live" && (
+                      <>
+                        <div className="camera-texture" />
+                        <ItemArt kind={sample.art} className="scan-art" />
+                      </>
+                    )
                   )}
                   <span className="preview-label">
                     <span
                       className={`preview-dot ${cameraState === "live" ? "live" : ""}`}
                     />
-                    {cameraState === "live"
-                      ? "Live camera"
-                      : cameraState === "loading"
-                        ? "Opening camera…"
-                        : "Sample preview"}
+                    {imported.photo
+                      ? "Imported photo"
+                      : cameraState === "live"
+                        ? "Live camera"
+                        : cameraState === "loading"
+                          ? "Opening camera…"
+                          : "Sample preview"}
                   </span>
                   <span className="focus-corner top-left" />
                   <span className="focus-corner top-right" />
                   <span className="focus-corner bottom-left" />
                   <span className="focus-corner bottom-right" />
                   <span className="camera-hint">
-                    {cameraState === "live"
-                      ? "Keep the item inside the frame"
-                      : sample.name}
+                    {imported.photo
+                      ? imported.photo.name
+                      : cameraState === "live"
+                        ? "Keep the item inside the frame"
+                        : sample.name}
                   </span>
                 </div>
+                <input
+                  ref={photoInputRef}
+                  className="photo-file-input"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
+                  aria-label="Choose an image from your device"
+                  onChange={(event) => void importPhoto(event)}
+                  tabIndex={-1}
+                />
+                {imported.error && (
+                  <p className="camera-error" role="alert">
+                    <Icon name="info" size={16} />
+                    {imported.error}
+                  </p>
+                )}
                 {cameraState === "error" && (
                   <p className="camera-error" role="status">
                     <Icon name="info" size={16} />
@@ -340,10 +383,19 @@ function App() {
                   </p>
                 )}
                 <div className="camera-utilities">
-                  <span>
-                    <Icon name="spark" size={14} />
-                    Simulated recognition
-                  </span>
+                  <button
+                    ref={importPhotoButtonRef}
+                    className="text-button import-photo-button"
+                    onClick={() => photoInputRef.current?.click()}
+                    disabled={imported.loading}
+                  >
+                    <Icon name="image" size={16} />
+                    {imported.loading
+                      ? "Opening photo…"
+                      : imported.photo
+                        ? "Change photo"
+                        : "Import photo"}
+                  </button>
                   <button
                     className="text-button"
                     onClick={
@@ -364,11 +416,29 @@ function App() {
                       size={15}
                     />
                   </button>
+                  {imported.photo && (
+                    <button
+                      className="text-button remove-photo-button"
+                      onClick={() => {
+                        imported.clear();
+                        importPhotoButtonRef.current?.focus();
+                      }}
+                    >
+                      <Icon name="close" size={15} />
+                      Remove
+                    </button>
+                  )}
                 </div>
+                <p className="recognition-note" aria-live="polite">
+                  <Icon name="spark" size={13} />
+                  {imported.photo
+                    ? "Photo stays on your device · recognition is simulated"
+                    : "Import from your device · max 10 MB · simulated recognition"}
+                </p>
                 <button
                   className="primary-button"
                   onClick={scan}
-                  disabled={cameraState === "loading"}
+                  disabled={cameraState === "loading" || imported.loading}
                 >
                   <Icon name="camera" />
                   Scan item
@@ -390,7 +460,15 @@ function App() {
             {screen === "matching" && (
               <section className="matching-screen" aria-live="polite">
                 <div className="matching-art">
-                  <ItemArt kind={sample.art} />
+                  {imported.photo ? (
+                    <img
+                      className="imported-preview"
+                      src={imported.photo.url}
+                      alt="Imported waste item"
+                    />
+                  ) : (
+                    <ItemArt kind={sample.art} />
+                  )}
                   <div className="scan-line" />
                 </div>
                 <span className="step-label">A LITTLE HELP IS ON THE WAY</span>

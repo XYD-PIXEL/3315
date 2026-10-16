@@ -336,6 +336,43 @@ button:hover {
   object-fit: cover;
   position: absolute;
 }
+.imported-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  position: absolute;
+  inset: 0;
+  padding: 36px 20px;
+}
+.photo-file-input {
+  display: none;
+}
+.camera-hint {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0 12px;
+}
+.recognition-note {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  font-size: 8px;
+  color: #65725d;
+  line-height: 1.6;
+  margin: -7px 0 13px;
+}
+.camera-utilities .import-photo-button {
+  font-weight: 650;
+  min-height: 44px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #e8eedf;
+}
+.remove-photo-button {
+  min-height: 44px;
+}
 .scan-art {
   height: 227px;
   width: 200px;

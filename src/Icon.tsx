@@ -3,6 +3,7 @@ export type IconName =
   | "arrow"
   | "back"
   | "camera"
+  | "image"
   | "search"
   | "pin"
   | "check"
@@ -35,6 +36,13 @@ const paths: Record<IconName, React.ReactNode> = {
     <>
       <path d="M4 6h4l2-3h4l2 3h4a1 1 0 0 1 1 1v12H3V7a1 1 0 0 1 1-1Z" />
       <circle cx="12" cy="12" r="4" />
+    </>
+  ),
+  image: (
+    <>
+      <rect x="3" y="3" width="18" height="18" rx="3" />
+      <circle cx="8" cy="8" r="1.5" />
+      <path d="m3 17 5-5 4 4 4-6 5 7" />
     </>
   ),
   search: (

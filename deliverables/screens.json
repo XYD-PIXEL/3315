@@ -4,7 +4,7 @@
     "query": "?scenario=confident",
     "title": "Scan an empty bottle",
     "width": 390,
-    "height": 876.86
+    "height": 895.86
   },
   {
     "name": "02-result-recycling",
@@ -25,7 +25,7 @@
     "query": "?scenario=ambiguous",
     "title": "Scan a confusing cup",
     "width": 390,
-    "height": 876.86
+    "height": 895.86
   },
   {
     "name": "05-candidates",
@@ -46,7 +46,7 @@
     "query": "?scenario=unknown",
     "title": "Scan an unrecognised packet",
     "width": 390,
-    "height": 876.86
+    "height": 895.86
   },
   {
     "name": "08-unrecognised",
@@ -133,5 +133,21 @@
     "title": "Food organics at an equipped station",
     "width": 390,
     "height": 895.86
+  },
+  {
+    "name": "20-imported-photo",
+    "query": "?scenario=confident",
+    "importPhoto": true,
+    "title": "Import a photo from your device",
+    "width": 390,
+    "height": 895.86
+  },
+  {
+    "name": "21-photo-import-error",
+    "query": "?scenario=confident",
+    "invalidPhoto": true,
+    "title": "Unsupported image: choose another file",
+    "width": 390,
+    "height": 938.86
   }
 ]

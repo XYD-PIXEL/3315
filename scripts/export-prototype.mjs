@@ -111,6 +111,18 @@ const screens = [
     query: "?view=result&item=banana&station=food-court-01",
     title: "Food organics at an equipped station",
   },
+  {
+    name: "20-imported-photo",
+    query: "?scenario=confident",
+    importPhoto: true,
+    title: "Import a photo from your device",
+  },
+  {
+    name: "21-photo-import-error",
+    query: "?scenario=confident",
+    invalidPhoto: true,
+    title: "Unsupported image: choose another file",
+  },
 ];
 
 // Static SVG: export visible DOM shapes, text and inline SVG illustrations.
@@ -216,6 +228,25 @@ async function vectorSnapshot() {
         layers.push("</g>");
         return;
       }
+      if (
+        element instanceof HTMLImageElement &&
+        element.complete &&
+        element.naturalWidth
+      ) {
+        const canvas = document.createElement("canvas");
+        canvas.width = element.naturalWidth;
+        canvas.height = element.naturalHeight;
+        canvas.getContext("2d").drawImage(element, 0, 0);
+        const left = parseFloat(style.paddingLeft) || 0;
+        const right = parseFloat(style.paddingRight) || 0;
+        const top = parseFloat(style.paddingTop) || 0;
+        const bottom = parseFloat(style.paddingBottom) || 0;
+        layers.push(
+          `<image x="${n(box.left - bounds.left + left)}" y="${n(box.top - bounds.top + top)}" width="${n(box.width - left - right)}" height="${n(box.height - top - bottom)}" href="${canvas.toDataURL("image/png")}" preserveAspectRatio="xMidYMid meet"/>`,
+        );
+        layers.push("</g>");
+        return;
+      }
       const background = element.classList.contains("camera-frame")
         ? "#e7eadc"
         : style.backgroundColor;
@@ -279,16 +310,47 @@ async function vectorSnapshot() {
 
 try {
   const index = [];
+  let samplePhoto;
   for (const screen of screens) {
     await page.goto(new URL(screen.query, baseURL).href);
     await page.locator("main").waitFor();
     if (screen.fill) await page.getByRole("textbox").fill(screen.fill);
-    await page
-      .locator("main")
-      .screenshot({
-        path: path.join(output, `${screen.name}.png`),
-        animations: "disabled",
+    if (screen.name === "01-scan-bottle") {
+      const art = await page.locator(".scan-art").evaluate((element) => {
+        const clone = element.cloneNode(true);
+        clone.removeAttribute("class");
+        clone.setAttribute("width", "200");
+        clone.setAttribute("height", "230");
+        return clone.outerHTML;
       });
+      const photoPage = await browser.newPage({
+        viewport: { width: 200, height: 230 },
+        deviceScaleFactor: 2,
+      });
+      await photoPage.setContent(`<body style="margin:0">${art}</body>`);
+      samplePhoto = await photoPage.screenshot({ omitBackground: true });
+      await photoPage.close();
+    }
+    if (screen.importPhoto) {
+      await page.locator('input[type="file"]').setInputFiles({
+        name: "bottle.png",
+        mimeType: "image/png",
+        buffer: samplePhoto,
+      });
+      await page.getByRole("img", { name: "Imported waste item" }).waitFor();
+    }
+    if (screen.invalidPhoto) {
+      await page.locator('input[type="file"]').setInputFiles({
+        name: "notes.txt",
+        mimeType: "text/plain",
+        buffer: Buffer.from("Not an image"),
+      });
+      await page.getByRole("alert").waitFor();
+    }
+    await page.locator("main").screenshot({
+      path: path.join(output, `${screen.name}.png`),
+      animations: "disabled",
+    });
     const snapshot = await vectorSnapshot();
     await writeFile(path.join(output, `${screen.name}.svg`), snapshot.svg);
     index.push({ ...screen, width: snapshot.width, height: snapshot.height });
@@ -306,7 +368,9 @@ try {
     path: path.resolve("deliverables/desktop-preview.png"),
     fullPage: true,
   });
-  console.log("Exported 19 SVG screens, 19 PNG previews and desktop preview.");
+  console.log(
+    `Exported ${screens.length} SVG screens, ${screens.length} PNG previews and desktop preview.`,
+  );
 } finally {
   await browser.close();
 }
